@@ -15,11 +15,12 @@ zeros:
         loop    zeros
 
 dump:
+        ; lea     cx, [di - eof]
         mov     ah, 40h
         xor     bx, bx
         inc     bx
         mov     dx, eof 
-        sub     di, dx
+        lea     cx, [word di - eof]
         int     21h
         ret
 

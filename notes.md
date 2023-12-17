@@ -20,6 +20,27 @@ The compiler will keep track of the position to dump information into using the 
 
 Instructions such as `STOSB` or `STOSD`. Set the data to be stored at `EAX` register.
 
+The pseudocode for the main compilation loop:
+```C
+char c;
+while ( c = getchar(STDIN) )
+{
+        switch (c)
+        {                              // ASCII HEX
+        case '>': process('>'); break; // 62    3E
+        case '<': process('<'); break; // 60    3C
+        case '+': process('+'); break; // 43    2B
+        case '-': process('-'); break; // 45    2D
+        case '.': process('.'); break; // 46    2E
+        case ',': process(','); break; // 44    2C
+        case '[': process('['); break; // 91    5B 
+        case ']': process(']'); break; // 93    5D
+        }
+}
+```
+The relative ordering should go:
+`+`,`,`,`-`,`.`,`<`,`>`,`[`,`]`
+
 ### Implementation of `>` and `<`
 Can be implemented with a single byte:
 ```asm
@@ -140,6 +161,17 @@ dump_stdout:
 ```
 
 May be safer to use STDOUT handle `1` along with the write API function.
+
+If so, it can take 15 bytes:
+```asm
+mov     ah, 40h
+xor     bx, bx
+inc     bx
+mov     dx, eof 
+lea     cx, [word di - eof]
+int     21h
+ret
+```
 
 ## MS DOS API Quick Reference
 
