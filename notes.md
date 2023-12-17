@@ -16,8 +16,7 @@ The syntax of brainfuck:
 
 Data pointer will be stored in `BX`.
 
-The compiler will keep track of the position to dump information into using the `DI`
-register. 
+The compiler will keep track of the position to dump information into using the `DI` register. 
 
 Instructions such as `STOSB` or `STOSD`. Set the data to be stored at `EAX` register.
 
@@ -68,19 +67,39 @@ The procedure of implementing the loop:
 When encountering a `[`:
 1. Dump the `0xE9` byte.
 2. Dump dummy two bytes.
-3. Push current instruction position onto the stack. This is the position of the
-   loop body.
+3. Push current instruction position onto the stack. This is the position of the loop body.
 4. Continue parsing loop
 
 When encountering a `]`:
 1. Dump the comparison bytes `0x842F` and the near `jnz` bytes `0x0F85`.
-2. Pop the position off of the stack. This is the position of the loop body. This will
-   be popped onto `AX` register. 
+2. Pop the position off of the stack. This is the position of the loop body. This will be popped onto `AX` register. 
 3. Calculate distance between `EDI` with `EAX`
 4. Store this after the `jnz` bytes.
 5. Calculate the position of the `jmp` statement via `lea`.
 6. Calculate the distance between `EDI` and this new position.
 7. Store this after the `jmp` bytes.
+
+The code for `[` takes 5 bytes:
+```asm
+bracket:
+        mov     al, 0xE9        ; Load JMP opcode
+        stosb                   ; Write JMP opcode
+        push    di              ; Push address of unknown displacement
+        stosw                   ; Fill diplacement two bytes
+```
+The code for `]` takes 22 bytes:
+```asm
+endbracket:
+        mov     eax, 0x850F2F84         ; Load instructions
+        stosd                           ; Write instructions
+        lea     si, [di - 6]            ; 6 = 4 opcode bytes + 2 bytes of unknown displacement after jmp
+        pop     bp                      ; retrieve address of unknown jmp displacement in BP
+        sub     si, bp                  ; si - bp yields distance between of loop body
+        mov     [bp], si                ; store in bp  
+        sub     bp, di                  ; bp - di yields the distance between jmp statements
+        mov     ax, bp                  ; stores bp for write
+        stosw                           ; store displacement after jnz
+```
 
 ## System notes
 
