@@ -68,7 +68,7 @@ Can be implemented with six bytes:
 ```asm
 mov ah, 01h     ; B401
 int 21h         ; CD21
-mov [bx], al    ; 678803
+mov [bx], al    ; 8807
 ```
 
 ### Implementation of `[` and `]`

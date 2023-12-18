@@ -1,6 +1,14 @@
+bf1: compiler/bf1.asm
+	nasm compiler/bf1.asm -f bin -o compiler/bf.com
+
+bf_list: compiler/bf.com
+	@ndisasm -o100h compiler/bf.com
+len: compiler/bf.com
+	dir .\compiler\bf.com
+
 syscall:
-	nasm syscall.asm -f bin -o syscall.com
+	nasm demo/syscall.asm -f bin -o demo/syscall.com
 
 listing:
-	@nasm test.asm -f bin -o test.com
-	@ndisasm -o100h test.com
+	@nasm demo/test.asm -f bin -o demo/test.com
+	@ndisasm -o100h demo/test.com
