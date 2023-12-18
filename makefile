@@ -1,5 +1,7 @@
 bf1: compiler/bf1.asm
 	nasm compiler/bf1.asm -f bin -o compiler/bf.exe
+bf2: compiler/bf2.asm
+	nasm compiler/bf2.asm -f bin -o compiler/bf.exe
 
 bf_list: compiler/bf.exe
 	@ndisasm -o100h compiler/bf.exe

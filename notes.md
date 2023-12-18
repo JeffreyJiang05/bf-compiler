@@ -41,6 +41,13 @@ while ( c = getchar(STDIN) )
 The relative ordering should go:
 `+`,`,`,`-`,`.`,`<`,`>`,`[`,`]`
 
+43,44,45,46,60,62
+2,6,2,6,1,1
+
+43,44,60 --> 45,46,62
+2,6,1 --> 2,6,1
+`+`,`,`,`<` --> `-`,`.`,`>`
+
 ### Implementation of `>` and `<`
 Can be implemented with a single byte:
 ```asm

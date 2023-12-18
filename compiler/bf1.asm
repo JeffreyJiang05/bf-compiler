@@ -32,7 +32,7 @@ get_char:
         mov     dx, char_buffer                 ; Set buffer
         mov     cl, 1                           ; CX = 1. Bytes to read.
         int     SYS_CALL
-        test    ax, ax
+        test    ax, ax                          ; Set ZF for AX
         jz      complete_compilation;           ; If not more characters, jump to finish the compilation
         mov     al, [char_buffer]               ; AL holds input character
 
@@ -67,10 +67,10 @@ switch:
 
 ; Processing the brackets are more complex. Handled separately.
         cmp     al, '['
-        je      open_bracket
+        je      open_bracket                    ; Process for `[`
 
         cmp     al, ']'
-        je      close_bracket
+        je      close_bracket                   ; Process for `]`
 relay:
         jmp get_char
 
@@ -101,12 +101,11 @@ close_bracket:
         stosw                                   ; Store displacement for JNZ.
         jmp     relay
 
-; To terminate the compiled program. Use a RET.
 complete_compilation:
         mov     al, 0xC3                        ; Load RET opcode
         stosb                                   ; Write RET to DI
         lea     cx, [di - EOF]
-        add     cx, TEXT
+        add     cx, TEXT                        ; Correct location of cell buffer in compiled program.
         mov     [program_buffer + 1], cx
 zero_buffer:                                    ; Initializes the cells for the compiled program
         xor     ax, ax
@@ -121,12 +120,12 @@ dump_buffer:
         stosb                                   ; Dump '$' at the end of the buffer
         mov     dx, program_buffer              ; buffer
         int     SYS_CALL
+; To terminate the compiled program. Use a RET.
 compiler_end:
         ret                                     ; terminate program. Stack should be 0.
 
-; buffer for character
 char_buffer:
-        db 0
+        db 0                                    ; buffer for character read from STDIN
 
 ; Instruction used for data to be dumped into compiled program.
 ; The following instruction will never be executed by the compiler.
@@ -157,5 +156,5 @@ inc_dec_pointer:                                ; Character >
 EOF:                                            ; End of compiler program
 ; The compiled file is stored at the end of the compiler program.
 program_buffer:
-        mov     bx, 0xFFFF                      ; Dummy values.
+        mov     bx, 0xFFFF                      ; 0xFFFF to be replaced by the size of the compiled program
 writable_buffer:
