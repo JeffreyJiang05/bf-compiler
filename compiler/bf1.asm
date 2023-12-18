@@ -1,18 +1,18 @@
 ;|--------------------------------------------------------------------------------------|;
 ;| TEENSY TINY BRAINFUCK COMPILER                                                       |;
 ;| VERSION 1                                                                            |;
-;| 154 bytes                                                                            |;
+;| 158 bytes                                                                            |;
 ;| Author: Jeffrey Jiang                                                                |;
 ;| Target: MS DOS on 80386+                                                             |;
 ;| Heavily inspired by                                                                  |;
 ;| https://www.muppetlabs.com/~breadbox/software/tiny/useless.html                      |;
 ;| USAGE                                                                                |;
-;| bf < input.bf > prog                                                                 |;
+;| bf.exe < input.bf > prog.exe                                                         |;
 ;|--------------------------------------------------------------------------------------|;
 
 ; BASIC MACROS
 %define TEXT 100h                               ; Tells DOS loads instructions to 0x100
-%define CELLS 100h                              ; Number of cells
+%define CELLS 8000h                             ; Number of cells. 32 KiB
 
 ; DOS API MACROS
 %define SYS_CALL 21h                            ; System call
@@ -73,6 +73,7 @@ switch:
         je      close_bracket
 relay:
         jmp get_char
+
 ; Relies on SI to be set correctly. Copies the appropriate number of byte from SI to DI.
 dump_six:
         movsd
@@ -107,10 +108,16 @@ complete_compilation:
         lea     cx, [di - EOF]
         add     cx, TEXT
         mov     [program_buffer + 1], cx
+zero_buffer:                                    ; Initializes the cells for the compiled program
+        xor     ax, ax
+        mov     cx, CELLS
+zeros:
+        stosb
+        loop    zeros                           ; Dumps 0x00 to DI for a total of CELLS times
+
 ; Dumps the program buffer to STDOUT. Then, terminates program. 
 dump_buffer:
         mov     ax, 0924h                       ; AH = 09h. AL = '$'
-        add     di, CELLS                       ; Add cells
         stosb                                   ; Dump '$' at the end of the buffer
         mov     dx, program_buffer              ; buffer
         int     SYS_CALL

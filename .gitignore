@@ -1,5 +1,6 @@
 *.com
 *.txt
 *.bf
+*.exe
 compiler/PROG
 compiler/bf
