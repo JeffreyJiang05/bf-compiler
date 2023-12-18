@@ -1,7 +1,7 @@
 ;|--------------------------------------------------------------------------------------|;
 ;| TEENSY TINY BRAINFUCK COMPILER                                                       |;
 ;| VERSION 1                                                                            |;
-;| ____ bytes                                                                           |;
+;| 154 bytes                                                                            |;
 ;| Author: Jeffrey Jiang                                                                |;
 ;| Target: MS DOS on 80386+                                                             |;
 ;| Heavily inspired by                                                                  |;
@@ -89,7 +89,7 @@ open_bracket:
         jmp     dump_two                        ; Write extra two random bytes to DI 
 
 close_bracket:
-        mov     eax, 0x850F2F84                 ; Load TEST and load JNZ.
+        mov     eax, 0x850F2F38                 ; Load TEST and load JNZ.
         stosd                                   ; Write instructions to DI
         lea     si, [di - 6]                    ; 6 = 4 opcode bytes + rel16
         pop     bp                              ; Pop JMP rel16 to be resolved in closing bracket

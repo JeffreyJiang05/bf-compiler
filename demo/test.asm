@@ -2,6 +2,6 @@ USE16
 org 100h
 
 start:
-        mov bx, 100h
-        ret
+        test [bx], ch
+        cmp [bx], ch
 eof:

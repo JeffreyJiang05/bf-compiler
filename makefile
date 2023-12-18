@@ -1,10 +1,10 @@
 bf1: compiler/bf1.asm
-	nasm compiler/bf1.asm -f bin -o compiler/bf.com
+	nasm compiler/bf1.asm -f bin -o compiler/bf
 
-bf_list: compiler/bf.com
-	@ndisasm -o100h compiler/bf.com
-len: compiler/bf.com
-	dir .\compiler\bf.com
+bf_list: compiler/bf
+	@ndisasm -o100h compiler/bf
+len: compiler/bf
+	dir .\compiler\bf
 
 syscall:
 	nasm demo/syscall.asm -f bin -o demo/syscall.com
