@@ -72,7 +72,7 @@ switch:
         cmp     al, ']'
         je      close_bracket                   ; Process for `]`
 relay:
-        jmp get_char
+        jmp     get_char
 
 ; Relies on SI to be set correctly. Copies the appropriate number of byte from SI to DI.
 dump_six:
@@ -81,7 +81,7 @@ dump_two:
         movsb
 dump_one:
         movsb
-        jmp relay                            ; Jump back to getting characters
+        jmp     relay                           ; Jump back to getting characters
 
 open_bracket:
         mov     al, 0xE9                        ; Load JMP opcode

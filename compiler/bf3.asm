@@ -1,7 +1,7 @@
 ;|--------------------------------------------------------------------------------------|;
 ;| TEENSY TINY BRAINFUCK COMPILER                                                       |;
-;| VERSION 2                                                                            |;
-;| 141 bytes                                                                            |;
+;| VERSION 3                                                                            |;
+;| 140 bytes                                                                            |;
 ;| Author: Jeffrey Jiang                                                                |;
 ;| Target: MS DOS on 80386+                                                             |;
 ;| Heavily inspired by                                                                  |;
@@ -54,7 +54,7 @@ loop_twice:                                     ; Loops twice. First checks for 
         cmp     al, '<'              
         je      dump_one                        ; Dump the one byte for `<`/'>'.
 
-        inc     si                              ; Move SI forward one byte to dec_byte_data.
+        inc     si                              ; Move SI forward one byte to dec_byte_data/open_bracket_data
 
         dec     ax
         dec     ax                              ; Decrease AL by two. Now `-` -> `+`; `.` -> `,`; `>` -> `<`.
@@ -65,6 +65,7 @@ loop_twice:                                     ; Loops twice. First checks for 
         cmp     al, '[' - 4
         je      open_bracket                    ; Process for `[`.
 
+        inc     si                              ; Move SI forward 
         cmp     al, ']' - 4
         je      close_bracket                   ; Process for `]`.
 relay:
@@ -85,8 +86,7 @@ open_bracket:
         jmp     dump_two                        ; Write extra two random bytes to DI.
 
 close_bracket:
-        mov     eax, 0x850F2F38                 ; Load CMP and load JNZ.
-        stosd                                   ; Write instructions to DI.
+        movsd                                   ; Write instructions to DI.   
         lea     bp, [di - 6]                    ; 6 = 4 opcode bytes + rel16.
         pop     si                              ; Pop JMP rel16 to be resolved in closing bracket.
         sub     bp, si                          ; BP - SI yields the size of the loop body.
@@ -148,10 +148,12 @@ inc_dec_pointer:                                ; Character `>`
 open_bracket_data:
         db      0xE9                            ; Load JMP opcode.
 
-
+close_bracket_data:
+        dd      0x850F2F38                      ; Load CMP and load JNZ.
+        
 EOF:                                            ; End of compiler program.
 ; The compiled file is stored at the end of the compiler program.
 program_buffer:
         mov     bx, 0xFFFF                      ; 0xFFFF to be replaced by the size of the compiled program.
                                                 ; Buffer to store character from STDIN in program_buffer + 1
-writable_buffer:                                
+writable_buffer:   
